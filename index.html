@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#10141d">
+  <title>Танчики — Retro Battle</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon">▣</span>
+        <div>
+          <strong>ТАНЧИКИ</strong>
+          <small>RETRO BATTLE · 1985 EDITION</small>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="soundBtn" class="icon-btn" title="Звук">♫ ВКЛ</button>
+        <button id="pauseBtn" class="icon-btn" title="Пауза">Ⅱ</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="game-column">
+        <div class="hud">
+          <div class="stat"><small>СЧЁТ</small><strong id="score">000000</strong></div>
+          <div class="stat"><small>УРОВЕНЬ</small><strong id="level">01 / 05</strong></div>
+          <div class="stat"><small>ЖИЗНИ</small><strong id="lives">♥ ♥ ♥</strong></div>
+          <div class="stat"><small>ВРАГИ</small><strong id="remaining">00</strong></div>
+          <div class="stat"><small>РЕКОРД</small><strong id="best">000000</strong></div>
+        </div>
+
+        <div class="game-shell">
+          <canvas id="game" width="624" height="624" aria-label="Игровое поле"></canvas>
+
+          <div id="overlay" class="overlay">
+            <div id="menuPanel" class="panel">
+              <div class="pixel-tank">▟█▙</div>
+              <div class="eyebrow">CLASSIC ARCADE REIMAGINED</div>
+              <h1>ТАНЧИКИ</h1>
+              <p class="subtitle">ЗАЩИТИ БАЗУ · УНИЧТОЖЬ ВРАГОВ</p>
+              <div class="menu-buttons">
+                <button id="startBtn" class="btn primary">▶ НАЧАТЬ ИГРУ</button>
+                <button id="recordsBtn" class="btn">★ РЕКОРДЫ</button>
+                <button id="settingsBtn" class="btn">⚙ НАСТРОЙКИ</button>
+              </div>
+              <p class="help">WASD / СТРЕЛКИ — ДВИЖЕНИЕ<br>ПРОБЕЛ — ОГОНЬ · P — ПАУЗА</p>
+            </div>
+
+            <div id="recordsPanel" class="panel wide hidden">
+              <h2>★ ТОП-10 РЕКОРДОВ</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th><th>ИМЯ</th><th>ОЧКИ</th>
+                      <th>УР.</th><th>ВРАГИ</th><th>ДАТА</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recordsBody"></tbody>
+                </table>
+              </div>
+              <div class="button-row">
+                <button id="clearRecordsBtn" class="btn danger">ОЧИСТИТЬ</button>
+                <button class="btn backBtn">НАЗАД</button>
+              </div>
+            </div>
+
+            <div id="settingsPanel" class="panel hidden">
+              <h2>⚙ НАСТРОЙКИ</h2>
+              <label class="setting-line">
+                <span>ЗВУК</span>
+                <input id="soundToggle" type="checkbox" checked>
+              </label>
+              <label class="setting-line volume-line">
+                <span>ГРОМКОСТЬ</span>
+                <input id="volumeSlider" type="range" min="0" max="100" value="45">
+                <output id="volumeValue">45%</output>
+              </label>
+              <button class="btn backBtn">НАЗАД</button>
+            </div>
+
+            <div id="pausePanel" class="panel hidden">
+              <h2>Ⅱ ПАУЗА</h2>
+              <p class="subtitle">ИГРА ПРИОСТАНОВЛЕНА</p>
+              <button id="resumeBtn" class="btn primary">▶ ПРОДОЛЖИТЬ</button>
+              <button id="pauseMenuBtn" class="btn">В МЕНЮ</button>
+            </div>
+
+            <div id="resultPanel" class="panel hidden">
+              <div class="eyebrow">MISSION REPORT</div>
+              <h2 id="resultTitle">ИГРА ОКОНЧЕНА</h2>
+              <div class="result-stats">
+                <div>ОЧКИ <strong id="finalScore">0</strong></div>
+                <div>УНИЧТОЖЕНО <strong id="finalKills">0</strong></div>
+                <div>УРОВЕНЬ <strong id="finalLevel">1</strong></div>
+              </div>
+              <p id="newRecord" class="new-record hidden">★ НОВЫЙ РЕКОРД!</p>
+              <div id="nameEntry" class="name-entry hidden">
+                <label for="playerName">ИМЯ ДЛЯ ТАБЛИЦЫ РЕКОРДОВ</label>
+                <input id="playerName" maxlength="16" placeholder="ИГРОК" autocomplete="off">
+                <button id="saveRecordBtn" class="btn primary">СОХРАНИТЬ РЕКОРД</button>
+              </div>
+              <button id="retryBtn" class="btn primary">↻ ИГРАТЬ СНОВА</button>
+              <button id="resultMenuBtn" class="btn">ГЛАВНОЕ МЕНЮ</button>
+            </div>
+
+            <div id="levelPanel" class="panel hidden">
+              <div class="eyebrow">GET READY</div>
+              <h2 id="levelTitle">УРОВЕНЬ 1</h2>
+              <p class="subtitle">ПРИГОТОВЬСЯ К БОЮ!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mobile-controls" aria-label="Сенсорное управление">
+          <div class="dpad">
+            <button data-control="up" class="control up">▲</button>
+            <button data-control="left" class="control left">◀</button>
+            <button data-control="down" class="control down">▼</button>
+            <button data-control="right" class="control right">▶</button>
+          </div>
+          <button data-control="fire" class="fire-btn">●<small>ОГОНЬ</small></button>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="side-card">
+          <h3>◈ МИССИЯ</h3>
+          <p>Защити орла в нижней части поля. Не позволяй противникам уничтожить базу.</p>
+          <div class="legend">
+            <div><span class="swatch player"></span> ТВОЙ ТАНК</div>
+            <div><span class="swatch enemy"></span> ПРОТИВНИКИ</div>
+            <div><span class="swatch brick"></span> КИРПИЧИ</div>
+            <div><span class="swatch steel"></span> БРОНЯ</div>
+            <div><span class="swatch water"></span> ВОДА</div>
+            <div><span class="swatch forest"></span> ЛЕС</div>
+          </div>
+        </div>
+        <div class="side-card">
+          <h3>★ БОНУСЫ</h3>
+          <div class="bonus-legend">
+            <div><b>★</b> Улучшение оружия</div>
+            <div><b>◇</b> Щит</div>
+            <div><b>◷</b> Остановка времени</div>
+            <div><b>✹</b> Граната</div>
+            <div><b>♥</b> Доп. жизнь</div>
+            <div><b>▣</b> Защита базы</div>
+          </div>
+        </div>
+        <div class="side-card tips">
+          <h3>⌨ УПРАВЛЕНИЕ</h3>
+          <p>WASD / ↑↓←→ — движение</p>
+          <p>ПРОБЕЛ — выстрел</p>
+          <p>P / ESC — пауза</p>
+          <p>ENTER — начать игру</p>
+          <p>M — звук</p>
+        </div>
+      </aside>
+    </main>
+    <footer>RETRO BATTLE · HTML5 CANVAS · OFFLINE EDITION</footer>
+  </div>
+</body>
+</html>
